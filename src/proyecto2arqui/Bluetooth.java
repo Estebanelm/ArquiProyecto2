@@ -1,5 +1,6 @@
 package proyecto2arqui;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -12,6 +13,7 @@ import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.ServiceRecord;
 import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
 import javax.obex.ClientSession;
 import javax.obex.HeaderSet;
 import javax.obex.Operation;
@@ -21,7 +23,7 @@ public class Bluetooth implements DiscoveryListener{
     
     private static Object lock=new Object();
     public ArrayList<RemoteDevice> devices;
-    
+    public String urlDevice;
     public Bluetooth() {
         devices = new ArrayList<RemoteDevice>();
     }
@@ -49,14 +51,17 @@ public class Bluetooth implements DiscoveryListener{
             System.out.println("Device Inquiry Completed. ");
             
        
-            UUID[] uuidSet = new UUID[1];
+            UUID[] uuidSet = new UUID[3];
             uuidSet[0]=new UUID(0x1105); //OBEX Object Push service
+            uuidSet[1]=new UUID(0x0008); //OBEX Object Push service
+            uuidSet[2]=new UUID(0x0003); //OBEX Object Push service
             
             int[] attrIDs =  new int[] {
                     0x0100 // Service name
             };
             
             for (RemoteDevice device : listener.devices) {
+                System.out.println(device.getBluetoothAddress());
                 agent.searchServices(
                         attrIDs,uuidSet,device,listener);
                 
@@ -113,54 +118,31 @@ public class Bluetooth implements DiscoveryListener{
     @Override
     public void servicesDiscovered(int transID, ServiceRecord[] servRecord) {
         for (int i = 0; i < servRecord.length; i++) {
-            String url = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
-            if (url == null) {
-                continue;
+            urlDevice = servRecord[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+            if (urlDevice != null) {
+                break; //take the first one
             }
-            DataElement serviceName = servRecord[i].getAttributeValue(0x0100);
-            if (serviceName != null) {
-                System.out.println("service " + serviceName.getValue() + " found " + url);
-                
-                if(serviceName.getValue().equals("OBEX Object Push")){
-                    sendMessageToDevice(url);                
-                }
-            } else {
-                System.out.println("service found " + url);
-            }
-            
-          
         }
     }
     
-    private static void sendMessageToDevice(String serverURL){
+    public void sendMessageToDevice(String command){
         try{
-            System.out.println("Connecting to " + serverURL);
+            System.out.println("Connecting to " + urlDevice);
     
-            ClientSession clientSession = (ClientSession) Connector.open(serverURL);
-            HeaderSet hsConnectReply = clientSession.connect(null);
-            if (hsConnectReply.getResponseCode() != ResponseCodes.OBEX_HTTP_OK) {
-                System.out.println("Failed to connect");
-                return;
-            }
-    
-            HeaderSet hsOperation = clientSession.createHeaderSet();
-            hsOperation.setHeader(HeaderSet.NAME, "Hello.txt");
-            hsOperation.setHeader(HeaderSet.TYPE, "text");
-    
-            //Create PUT Operation
-            Operation putOperation = clientSession.put(hsOperation);
+            StreamConnection streamConnection = (StreamConnection) Connector.open(urlDevice);
     
             // Send some text to server
-            byte data[] = "Hello World !!!".getBytes("iso-8859-1");
-            OutputStream os = putOperation.openOutputStream();
-            os.write(data);
+            byte data[] = command.getBytes();
+            OutputStream os = streamConnection.openOutputStream();
+            InputStream is = streamConnection.openInputStream();
+            os.write(data); //'1' means ON and '0' means OFF
             os.close();
-    
-            putOperation.close();
-    
-            clientSession.disconnect(null);
-    
-            clientSession.close();
+            byte[] b = new byte[200];
+            Thread.sleep(200);
+            is.read(b);
+            is.close();
+            streamConnection.close();
+            System.out.println("received " + new String(b));
         }
         catch (Exception e) {
             e.printStackTrace();
