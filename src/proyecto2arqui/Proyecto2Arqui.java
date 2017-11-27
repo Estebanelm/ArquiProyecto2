@@ -28,7 +28,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     
     public Proyecto2Arqui()
     {
-        bluetooth = new Bluetooth();
+        
         setLayout(new FlowLayout());
       /*   
       lblSensorTemperatura = new Label("Sensor de temperatura");  // construct the Label component
@@ -90,6 +90,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     public static void main(String[] args) {
         Motor motorPlanta = new Motor();
         Monitor monitorPlanta = new Monitor();
+        bluetooth = new Bluetooth();
         bluetooth.execute();
         new Proyecto2Arqui();
         
