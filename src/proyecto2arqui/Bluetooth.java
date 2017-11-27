@@ -24,6 +24,7 @@ public class Bluetooth implements DiscoveryListener{
     private static Object lock=new Object();
     public ArrayList<RemoteDevice> devices;
     public String urlDevice;
+    public String stringSensores;
     public Bluetooth() {
         devices = new ArrayList<RemoteDevice>();
     }
@@ -134,19 +135,32 @@ public class Bluetooth implements DiscoveryListener{
             // Send some text to server
             byte data[] = command.getBytes();
             OutputStream os = streamConnection.openOutputStream();
-            InputStream is = streamConnection.openInputStream();
             os.write(data); //'1' means ON and '0' means OFF
             os.close();
-            byte[] b = new byte[200];
-            Thread.sleep(200);
-            is.read(b);
-            is.close();
             streamConnection.close();
-            System.out.println("received " + new String(b));
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+    public void ReceiveMessage()
+    {
+        try{
+            System.out.println("Connecting to " + urlDevice);
+    
+            StreamConnection streamConnection = (StreamConnection) Connector.open(urlDevice);
+    
+            // Send some text to server
+            InputStream is = streamConnection.openInputStream();
+            byte[] b = new byte[200];
+            Thread.sleep(200);
+            is.read(b);
+            is.close();
+            streamConnection.close();
+            stringSensores = b.toString();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

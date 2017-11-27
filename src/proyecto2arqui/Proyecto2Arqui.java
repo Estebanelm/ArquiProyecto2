@@ -24,13 +24,13 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     private double temperatura = 0;
     private double lluvia = 0;
     private String techo;
+    private static Bluetooth bluetooth;
     
     public Proyecto2Arqui()
     {
+        bluetooth = new Bluetooth();
         setLayout(new FlowLayout());
-         // "super" Frame, which is a Container, sets its layout to FlowLayout to arrange
-         // the components from left-to-right, and flow to next row from top-to-bottom.
- 
+      /*   
       lblSensorTemperatura = new Label("Sensor de temperatura");  // construct the Label component
       add(lblSensorTemperatura);   // "super" Frame container adds Label component
       
@@ -44,7 +44,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
       tfSensorLluvia = new TextField("0", 10); // construct the TextField component
       tfSensorLluvia.setEditable(false);       // set to read-only
       add(tfSensorLluvia);                     // "super" Frame container adds TextField component
-      
+      */
       lbTecho = new Label("Techo");  // construct the Label component
       add(lbTecho);                // "super" Frame container adds Label component
  
@@ -63,6 +63,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
          public void actionPerformed(ActionEvent evt) {
             techo = "Abierto";
             tfTecho.setText(techo);
+            bluetooth.sendMessageToDevice("abrir");
          }
         });
       
@@ -71,29 +72,17 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
          public void actionPerformed(ActionEvent evt) {
             techo = "Cerrado";
             tfTecho.setText(techo);
+            bluetooth.sendMessageToDevice("cerrar");
          }
       });
-         // "btnCount" is the source object that fires an ActionEvent when clicked.
-         // The source add "this" instance as an ActionEvent listener, which provides
-         //   an ActionEvent handler called actionPerformed().
-         // Clicking "btnCount" invokes actionPerformed().
  
          addWindowListener(this);
       setTitle("Cubre plantas");  // "super" Frame sets its title
       setSize(250, 100);        // "super" Frame sets its initial window size
- 
-      // For inspecting the Container/Components objects
-      // System.out.println(this);
-      // System.out.println(lblCount);
-      // System.out.println(tfCount);
-      // System.out.println(btnCount);
+
  
       setVisible(true);         // "super" Frame shows
- 
-      // System.out.println(this);
-      // System.out.println(lblCount);
-      // System.out.println(tfCount);
-      // System.out.println(btnCount);
+
     }
     /**
      * @param args the command line arguments
@@ -101,9 +90,11 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     public static void main(String[] args) {
         Motor motorPlanta = new Motor();
         Monitor monitorPlanta = new Monitor();
-        Bluetooth bluetooth = new Bluetooth();
         bluetooth.execute();
-        //new Proyecto2Arqui();
+        new Proyecto2Arqui();
+        
+        
+        
     }
     
      @Override
