@@ -6,6 +6,9 @@
 package proyecto2arqui;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.bluetooth.*;
 /**
  *
@@ -63,7 +66,11 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
          public void actionPerformed(ActionEvent evt) {
             techo = "Abierto";
             tfTecho.setText(techo);
-            bluetooth.sendMessageToDevice("abrir");
+             try {
+                 bluetooth.sendMessageToDevice("1");
+             } catch (IOException ex) {
+                 Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
+             }
          }
         });
       
@@ -72,7 +79,11 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
          public void actionPerformed(ActionEvent evt) {
             techo = "Cerrado";
             tfTecho.setText(techo);
-            bluetooth.sendMessageToDevice("cerrar");
+             try {
+                 bluetooth.sendMessageToDevice("0");
+             } catch (IOException ex) {
+                 Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
+             }
          }
       });
  
@@ -91,7 +102,11 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
         Motor motorPlanta = new Motor();
         Monitor monitorPlanta = new Monitor();
         bluetooth = new Bluetooth();
-        bluetooth.execute();
+        try {
+            bluetooth.execute();
+        } catch (Exception ex) {
+            Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
+        }
         new Proyecto2Arqui();
         
         
