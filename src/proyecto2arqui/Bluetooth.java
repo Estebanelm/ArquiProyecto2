@@ -1,7 +1,10 @@
 package proyecto2arqui;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
 import org.korecky.bluetooth.client.hc06.entity.RFCommBluetoothDevice;
 import org.korecky.bluetooth.client.hc06.listener.RFCommClientEventListener;
 import org.korecky.bluetooth.client.hc06.event.ErrorEvent;
@@ -13,6 +16,7 @@ import org.korecky.bluetooth.client.hc06.listener.BluetoothScanEventListener;
 public class Bluetooth{
     
     public static RFCommBluetoothDevice deviceFound;
+    public static String urlAConectar;
     
     public void execute() throws Exception {
         // Prepare search thread
@@ -35,6 +39,7 @@ public class Bluetooth{
                     System.out.println(String.format("   URL: %s", device.getUrl()));
                     i++;
                     deviceFound = device;
+                    urlAConectar = device.getUrl();
                 }
                 System.out.println();
             }
@@ -51,22 +56,21 @@ public class Bluetooth{
     }
     
     public void sendMessageToDevice(String command) throws IOException{
-        RFCommBluetoothDevice selectedDevice = deviceFound;
-        RFCommClientThread commThread = new RFCommClientThread(selectedDevice.getUrl(), '\n', new char[]{'a'}, new RFCommClientEventListener() {
-                            @Override
-                            public void error(ErrorEvent evt) {
-                                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                            }
-
-                            @Override
-                            public void messageReceived(MessageReceivedEvent evt) {
-                                System.out.println(String.format("[%s] %s", new Date(), evt.getMessage()));
-                            }
-                        });
-        commThread.start();
-
-        // Send message to HC06 module
-        commThread.send(command);
+        try{
+            System.out.println("Connecting to " + urlAConectar);
+    
+            StreamConnection streamConnection = (StreamConnection) Connector.open(urlAConectar);
+    
+            // Send some text to server
+            byte data[] = command.getBytes();
+            OutputStream os = streamConnection.openOutputStream();
+            os.write(data); //'1' means ON and '0' means OFF
+            os.close();
+            streamConnection.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     /*public void ReceiveMessage()
     {
