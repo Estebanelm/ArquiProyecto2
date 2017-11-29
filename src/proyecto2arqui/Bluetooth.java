@@ -52,10 +52,9 @@ public class Bluetooth implements DiscoveryListener{
             System.out.println("Device Inquiry Completed. ");
             
        
+       
             UUID[] uuidSet = new UUID[3];
-            uuidSet[0]=new UUID(0x1105); //OBEX Object Push service
-            uuidSet[1]=new UUID(0x0008); //OBEX Object Push service
-            uuidSet[2]=new UUID(0x0003); //OBEX Object Push service
+            uuidSet[0]=new UUID(0x1101); //OBEX Object Push service
             
             int[] attrIDs =  new int[] {
                     0x0100 // Service name
