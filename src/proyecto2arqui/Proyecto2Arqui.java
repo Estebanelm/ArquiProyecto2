@@ -19,8 +19,8 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     private Label lblSensorTemperatura;    // Declare a Label component 
     private Label lblSensorLluvia;    // Declare a Label component
     private Label lbTecho;    // Declare a Label component 
-    private TextField tfSensorTemperatura; // Declare a TextField component 
-    private TextField tfSensorLluvia; // Declare a TextField component 
+    private static TextField tfSensorTemperatura; // Declare a TextField component 
+    private static TextField tfSensorLluvia; // Declare a TextField component 
     private TextField tfTecho; // Declare a TextField component 
     private Button btnAbrirTecho;   // Declare a Button component
     private Button btnCerrarTecho;
@@ -33,7 +33,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     {
         
         setLayout(new FlowLayout());
-      /*   
+       
       lblSensorTemperatura = new Label("Sensor de temperatura");  // construct the Label component
       add(lblSensorTemperatura);   // "super" Frame container adds Label component
       
@@ -47,7 +47,7 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
       tfSensorLluvia = new TextField("0", 10); // construct the TextField component
       tfSensorLluvia.setEditable(false);       // set to read-only
       add(tfSensorLluvia);                     // "super" Frame container adds TextField component
-      */
+      
       lbTecho = new Label("Techo");  // construct the Label component
       add(lbTecho);                // "super" Frame container adds Label component
  
@@ -108,7 +108,20 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
             Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
         }
         new Proyecto2Arqui();
-        
+        while (true)
+        {
+            try {
+                Thread.sleep(100);
+                bluetooth.ReceiveMessage();
+                String[] datos = Bluetooth.stringSensores.split(",");
+                tfSensorLluvia.setText(datos[0]);
+                tfSensorTemperatura.setText(datos[0]);
+            }
+            catch (Exception e)
+            {
+                System.out.println("Error de thread");
+            }
+        }
         
         
     }

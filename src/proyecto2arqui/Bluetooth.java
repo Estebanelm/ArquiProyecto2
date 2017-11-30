@@ -1,6 +1,7 @@
 package proyecto2arqui;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import javax.microedition.io.Connector;
@@ -17,6 +18,7 @@ public class Bluetooth{
     
     public static RFCommBluetoothDevice deviceFound;
     public static String urlAConectar;
+    public static String stringSensores;
     
     public void execute() throws Exception {
         // Prepare search thread
@@ -72,12 +74,12 @@ public class Bluetooth{
             e.printStackTrace();
         }
     }
-    /*public void ReceiveMessage()
+    public void ReceiveMessage()
     {
         try{
-            System.out.println("Connecting to " + urlDevice);
+            System.out.println("Connecting to " + urlAConectar);
     
-            StreamConnection streamConnection = (StreamConnection) Connector.open(urlDevice);
+            StreamConnection streamConnection = (StreamConnection) Connector.open(urlAConectar);
     
             // Send some text to server
             InputStream is = streamConnection.openInputStream();
@@ -91,5 +93,5 @@ public class Bluetooth{
         catch (Exception e) {
             e.printStackTrace();
         }
-    }*/
+    }
 }
