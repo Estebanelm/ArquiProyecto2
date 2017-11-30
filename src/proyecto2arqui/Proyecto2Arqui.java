@@ -24,10 +24,16 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
     private TextField tfTecho; // Declare a TextField component 
     private Button btnAbrirTecho;   // Declare a Button component
     private Button btnCerrarTecho;
+    private static TextField tfModo;
+    private Button btnModoManual;
+    private Button btnModoAuto;
     private double temperatura = 0;
     private double lluvia = 0;
     private String techo;
     private static Bluetooth bluetooth;
+    private static boolean modo; //1 manual, 0 automatico
+    private static String mensaje;
+    private String modotext;
     
     public Proyecto2Arqui()
     {
@@ -46,7 +52,10 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
  
       tfSensorLluvia = new TextField("0", 10); // construct the TextField component
       tfSensorLluvia.setEditable(false);       // set to read-only
-      add(tfSensorLluvia);                     // "super" Frame container adds TextField component
+      add(tfSensorLluvia);     
+      // "super" Frame container adds TextField component
+      
+      
       
       lbTecho = new Label("Techo");  // construct the Label component
       add(lbTecho);                // "super" Frame container adds Label component
@@ -61,29 +70,53 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
       btnCerrarTecho = new Button("Cerrar Techo");   // construct the Button component
       add(btnCerrarTecho);                    // "super" Frame container adds Button component
  
+      tfModo = new TextField("0", 10); // construct the TextField component
+      tfModo.setEditable(false);       // set to read-only
+      add(tfModo);
+      
+      btnModoManual = new Button("Modo Manual");   // construct the Button component
+      add(btnModoManual);                    // "super" Frame container adds Button component
+      
+      btnModoAuto = new Button("Modo Auto");   // construct the Button component
+      add(btnModoAuto);                    // "super" Frame container adds Button component
+      
       btnAbrirTecho.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent evt) {
             techo = "Abierto";
             tfTecho.setText(techo);
-             try {
-                 bluetooth.sendMessageToDevice("1");
-             } catch (IOException ex) {
-                 Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
-             }
+            mensaje = "0";
          }
         });
       
       btnCerrarTecho.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent evt) {
+            if (modo)
+            {
             techo = "Cerrado";
             tfTecho.setText(techo);
-             try {
-                 bluetooth.sendMessageToDevice("0");
-             } catch (IOException ex) {
-                 Logger.getLogger(Proyecto2Arqui.class.getName()).log(Level.SEVERE, null, ex);
-             }
+            mensaje = "1";
+            }
+            
+         }
+      });
+      
+      btnModoAuto.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent evt) {
+            modotext = "Auto";
+            tfModo.setText(modotext);
+            modo = true;
+         }
+      });
+      
+      btnModoManual.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent evt) {
+            modotext = "Manual";
+            tfModo.setText(modotext);
+            modo = false;
          }
       });
  
@@ -111,7 +144,15 @@ public class Proyecto2Arqui extends Frame implements ActionListener, WindowListe
         while (true)
         {
             try {
-                Thread.sleep(100);
+                if (modo)
+                {
+                    bluetooth.sendMessageToDevice(mensaje);
+                }
+                else
+                {
+                    bluetooth.sendMessageToDevice("2");
+                }
+                Thread.sleep(50);
                 bluetooth.ReceiveMessage();
                 String[] datos = Bluetooth.stringSensores.split(",");
                 tfSensorLluvia.setText(datos[0]);

@@ -80,15 +80,20 @@ public class Bluetooth{
             System.out.println("Connecting to " + urlAConectar);
     
             StreamConnection streamConnection = (StreamConnection) Connector.open(urlAConectar);
-    
+            System.out.println("se conecto");
             // Send some text to server
+
             InputStream is = streamConnection.openInputStream();
-            byte[] b = new byte[200];
-            Thread.sleep(200);
-            is.read(b);
+            int byteCount = is.available();
+            byte[] rawBytes;
+            if(byteCount > 0)
+             {
+                rawBytes = new byte[byteCount];
+                is.read(rawBytes);
+                stringSensores = rawBytes.toString();
+              }
             is.close();
             streamConnection.close();
-            stringSensores = b.toString();
         }
         catch (Exception e) {
             e.printStackTrace();
